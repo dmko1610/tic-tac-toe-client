@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import { socket } from "../services/socket";
-import { Alert, Button, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View
+} from "react-native";
 import { GameState, PlayerSymbol } from "../types/game";
 import { GameScreen } from "./GameScreen";
 import { usePlayerId } from "../hooks/usePlayerId";
@@ -106,7 +113,9 @@ export function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <Button title="Create room" onPress={createRoom} />
+      <Pressable onPress={createRoom} style={styles.actionButton}>
+        <Text style={styles.actionButtonText}>Create room</Text>
+      </Pressable>
 
       <TextInput
         placeholder="Room code"
@@ -116,12 +125,39 @@ export function HomeScreen() {
         style={styles.input}
       />
 
-      <Button title="Join room" onPress={joinRoom} />
+      <Pressable onPress={joinRoom} style={styles.actionButton}>
+        <Text style={styles.actionButtonText}>Join room</Text>
+      </Pressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", padding: 24, gap: 12 },
-  input: { borderWidth: 1, borderColor: "#ccc", padding: 12, borderRadius: 8 }
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 24,
+    gap: 12
+  },
+  input: {
+    width: 300,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: 12,
+    borderRadius: 8
+  },
+  actionButton: {
+    width: 300,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 12,
+    borderRadius: 8,
+    backgroundColor: "#222"
+  },
+  actionButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "700"
+  }
 });
