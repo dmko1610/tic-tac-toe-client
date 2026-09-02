@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { socket } from "../services/socket";
 import { GameState, PlayerSymbol } from "../types/game";
+import { RoomQrCode } from "../components/RoomQrCode";
 
 interface Props {
   playerId: string;
@@ -41,6 +42,7 @@ export function GameScreen({ playerId, symbol, state, onLeave }: Props) {
   return (
     <View style={styles.wrapper}>
       <View style={styles.container}>
+        <RoomQrCode roomCode={state.roomCode} />
         <View style={styles.roomHeader}>
           <Text style={styles.roomLabel}>Share this room code</Text>
           <Text selectable style={styles.roomCode}>

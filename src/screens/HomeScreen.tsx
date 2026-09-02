@@ -11,11 +11,14 @@ import {
 import { GameState, PlayerSymbol } from "../types/game";
 import { GameScreen } from "./GameScreen";
 import { usePlayerId } from "../hooks/usePlayerId";
+import { ScanRoomScreen } from "./ScanRoomScreen";
 
 export function HomeScreen() {
   const [roomCode, setRoomCode] = useState("");
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [symbol, setSymbol] = useState<PlayerSymbol | null>(null);
+  const [isScanning, setIsScanning] = useState(false);
+
   const normalizedRoomCode = roomCode.trim();
   const canJoinRoom = normalizedRoomCode.length === 6;
 
@@ -113,6 +116,21 @@ export function HomeScreen() {
     );
   }
 
+  if (isScanning) {
+    return (
+      <ScanRoomScreen
+        onCancel={() => setIsScanning(false)}
+        onRoomScanned={(scannedRoomCode) => {
+          setIsScanning(false);
+          socket.emit("join_room", {
+            playerId,
+            roomCode: scannedRoomCode
+          });
+        }}
+      />
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Pressable onPress={createRoom} style={styles.actionButton}>
@@ -122,7 +140,9 @@ export function HomeScreen() {
       <TextInput
         placeholder="Room code"
         value={roomCode}
-        onChangeText={(value) => setRoomCode(value.replace(/\D/g, "").slice(0, 6))}
+        onChangeText={(value) =>
+          setRoomCode(value.replace(/\D/g, "").slice(0, 6))
+        }
         keyboardType="number-pad"
         maxLength={6}
         style={styles.input}
@@ -137,6 +157,13 @@ export function HomeScreen() {
         ]}
       >
         <Text style={styles.actionButtonText}>Join room</Text>
+      </Pressable>
+
+      <Pressable
+        onPress={() => setIsScanning(true)}
+        style={styles.actionButton}
+      >
+        <Text style={styles.actionButtonText}>Scan QR</Text>
       </Pressable>
     </View>
   );
