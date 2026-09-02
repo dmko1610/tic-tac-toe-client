@@ -16,6 +16,8 @@ export function HomeScreen() {
   const [roomCode, setRoomCode] = useState("");
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [symbol, setSymbol] = useState<PlayerSymbol | null>(null);
+  const normalizedRoomCode = roomCode.trim();
+  const canJoinRoom = normalizedRoomCode.length === 6;
 
   const playerId = usePlayerId();
 
@@ -70,13 +72,13 @@ export function HomeScreen() {
   function joinRoom() {
     console.log("join pressed", {
       playerId,
-      roomCode,
+      roomCode: normalizedRoomCode,
       connected: socket.connected
     });
 
     socket.emit("join_room", {
       playerId,
-      roomCode
+      roomCode: normalizedRoomCode
     });
   }
 
@@ -120,12 +122,20 @@ export function HomeScreen() {
       <TextInput
         placeholder="Room code"
         value={roomCode}
-        onChangeText={setRoomCode}
+        onChangeText={(value) => setRoomCode(value.replace(/\D/g, "").slice(0, 6))}
         keyboardType="number-pad"
+        maxLength={6}
         style={styles.input}
       />
 
-      <Pressable onPress={joinRoom} style={styles.actionButton}>
+      <Pressable
+        onPress={joinRoom}
+        disabled={!canJoinRoom}
+        style={[
+          styles.actionButton,
+          !canJoinRoom ? styles.actionButtonDisabled : null
+        ]}
+      >
         <Text style={styles.actionButtonText}>Join room</Text>
       </Pressable>
     </View>
@@ -154,6 +164,9 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     backgroundColor: "#222"
+  },
+  actionButtonDisabled: {
+    opacity: 0.5
   },
   actionButtonText: {
     color: "#fff",
