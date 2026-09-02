@@ -106,8 +106,6 @@ export function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <Text>Your player ID: {playerId}</Text>
-
       <Button title="Create room" onPress={createRoom} />
 
       <TextInput

@@ -11,6 +11,11 @@ interface Props {
 
 export function GameScreen({ playerId, symbol, state, onLeave }: Props) {
   const isMyTurn = state.status === "playing" && state.currentTurn === symbol;
+  const isGameFinished = state.status !== "playing" && state.status !== "waiting";
+  const didRequestRematch = state.rematchRequests.includes(symbol);
+  const opponentSymbol = symbol === "X" ? "O" : "X";
+  const didOpponentRequestRematch =
+    state.rematchRequests.includes(opponentSymbol);
 
   function makeMove(cellIndex: number) {
     if (!isMyTurn || state.board[cellIndex]) {
@@ -43,6 +48,10 @@ export function GameScreen({ playerId, symbol, state, onLeave }: Props) {
       <Text>You are: {symbol}</Text>
       <Text>Status: {state.status}</Text>
       <Text>Turn: {state.currentTurn}</Text>
+      {didRequestRematch ? <Text>Waiting for opponent...</Text> : null}
+      {!didRequestRematch && didOpponentRequestRematch ? (
+        <Text>Opponent wants a rematch</Text>
+      ) : null}
 
       <View style={styles.innerContainer}>
         {state.board.map((cell, index) => (
@@ -59,8 +68,12 @@ export function GameScreen({ playerId, symbol, state, onLeave }: Props) {
         ))}
       </View>
 
-      {state.status !== "playing" && state.status !== "waiting" ? (
-        <Button title="Rematch" onPress={requestRematch} />
+      {isGameFinished ? (
+        <Button
+          title={didRequestRematch ? "Rematch requested" : "Rematch"}
+          onPress={requestRematch}
+          disabled={didRequestRematch}
+        />
       ) : null}
 
       <Button title="Leave" onPress={onLeave} />
